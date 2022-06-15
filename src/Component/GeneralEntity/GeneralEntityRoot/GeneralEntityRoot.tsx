@@ -19,8 +19,10 @@ import GeneralEntityForm, { FormConfig } from '../GeneralEntityForm/GeneralEntit
 import GeneralEntityTable, { TableConfig } from '../GeneralEntityTable/GeneralEntityTable';
 
 import './GeneralEntityRoot.less';
+import FormUtil from '../../../Util/FormUtil';
 
 export type GeneralEntityConfigType<T extends BaseEntity> = {
+  additionalTools?: string[];
   endpoint: string;
   entityType: string;
   entityName?: string;
@@ -35,6 +37,7 @@ type OwnProps<T extends BaseEntity> = GeneralEntityConfigType<T>;
 export type GeneralEntityRootProps<T extends BaseEntity> = OwnProps<T> & React.HTMLAttributes<HTMLDivElement>;
 
 export function GeneralEntityRoot<T extends BaseEntity> ({
+  additionalTools = [],
   endpoint,
   entityType,
   entityName = 'Entität',
@@ -181,6 +184,28 @@ export function GeneralEntityRoot<T extends BaseEntity> ({
   const initialValues = useMemo(() => entityController?.getInitialFormValues(), [entityController]);
   const saveReloadDisabled = useMemo(() => _isEmpty(editEntity) || !formIsDirty, [formIsDirty, editEntity]);
 
+  const pageHeaderTools = [
+    <Button
+      disabled={saveReloadDisabled || !formValid}
+      icon={<SaveOutlined />}
+      key="save"
+      onClick={onSaveClick}
+      type="primary"
+    >
+      {`${entityName} speichern`}
+    </Button>,
+    <Button
+      disabled={saveReloadDisabled}
+      icon={<UndoOutlined />}
+      key="reset"
+      onClick={onResetForm}
+      type="primary"
+    >
+      {`${entityName} zurücksetzen`}
+    </Button>,
+    ...additionalTools.map(FormUtil.getAdditionalTool)
+  ];
+
   return (
     <div className="general-entity-root">
       <PageHeader
@@ -188,26 +213,7 @@ export function GeneralEntityRoot<T extends BaseEntity> ({
         onBack={() => history.goBack()}
         title={navigationTitle}
         subTitle={subTitle}
-        extra={[
-          <Button
-            disabled={saveReloadDisabled || !formValid}
-            icon={<SaveOutlined />}
-            key="save"
-            onClick={onSaveClick}
-            type="primary"
-          >
-            {`${entityName} speichern`}
-          </Button>,
-          <Button
-            disabled={saveReloadDisabled}
-            icon={<UndoOutlined />}
-            key="reset"
-            onClick={onResetForm}
-            type="primary"
-          >
-            {`${entityName} zurücksetzen`}
-          </Button>
-        ]}
+        extra={pageHeaderTools}
       >
       </PageHeader>
       <div className="left-container">

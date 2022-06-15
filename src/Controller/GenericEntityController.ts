@@ -11,6 +11,7 @@ import GenericService from '../Service/GenericService/GenericService';
 import { FieldConfig, FormConfig } from '../Component/GeneralEntity/GeneralEntityForm/GeneralEntityForm';
 import Logger from '@terrestris/base-util/dist/Logger';
 import Application from '../Model/Application';
+import Layer from '../Model/Layer';
 
 // TODO: add explicit value objects
 export type FieldValue = any;
@@ -78,6 +79,9 @@ export class GenericEntityController<T extends BaseEntity> {
     let entityCreated = this.create(BaseEntity);
     if (this.formConfig?.name === 'application') {
       entityCreated = this.create(Application);
+    }
+    if (this.formConfig?.name === 'layer') {
+      entityCreated = this.create(Layer);
     }
     this.entity = entityCreated as T;
     this.initializeFormValues();
